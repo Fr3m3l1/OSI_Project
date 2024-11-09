@@ -18,4 +18,4 @@ This project is a nutrition tracking application that allows users to track thei
 - SQLite
 - Nutrionix API
 
-![Infrastructure](https://github.com/Fr3m3l1/OSI_Project/blob/main/Infrastucture Plan.png?raw=true)
+![Infrastructure](https://github.com/Fr3m3l1/OSI_Project/blob/main/Infrastucture%20Plan.png?raw=true)
