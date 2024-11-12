@@ -1,5 +1,5 @@
 import sqlite3
-from test import NutritionixAPI
+from nutritionix_api import NutritionixAPI
 
 # Initialize NutritionixAPI
 api = NutritionixAPI()
