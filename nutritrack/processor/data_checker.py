@@ -70,7 +70,7 @@ def fetch_and_store_nutrition_data(db_name, query, user_id = None, amount = 1) -
                 print("No data found for the given query.")
                 return Exception("No data found for the given query.")
 
-        if user_id != None and nutrition_data:
+        if user_id != None:
             conn = sqlite3.connect(db_name)
             cursor = conn.cursor()
             cursor.execute('''

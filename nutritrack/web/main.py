@@ -1,73 +1,23 @@
 from streamlit_cookies_controller import CookieController
 import streamlit as st
-import hashlib
-import sqlite3
 import time
 import pandas as pd
 import sys
 
 from processor.data_checker import fetch_and_store_nutrition_data
 from web.helper.cookies import set_cookie, get_cookie, delete_cookie
-
-# Helper function to hash passwords
-def hash_password(password: str) -> str:
-    return hashlib.sha256(password.encode()).hexdigest()
+from web.helper.userHandling import login_user, add_user, get_user_data_weekConsumed
+from web.helper.miscellaneous import navigate_to
 
 # Database setup
 print(f"Database path: {sys.argv[1]}")
 DB_NAME = sys.argv[1]
 controller = CookieController()
 
-# Database functions
-def add_user(username, password):
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
-    # Check if user already exists
-    cursor.execute("SELECT * FROM Users WHERE username = ?", (username,))
-    user = cursor.fetchone()
-    if user:
-        conn.close()
-        return False
-    cursor.execute("INSERT INTO Users (username, password) VALUES (?, ?)", 
-                   (username, hash_password(password)))
-    conn.commit()
-    conn.close()
-    return True
-
-def login_user(username, password):
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM Users WHERE username = ?", (username,))
-    user = cursor.fetchone()
-    conn.close()
-    
-    if user and user[2] == hash_password(password):  # user[2] is the password column
-        return user
-    return None
-
-def get_user_data_weekConsumed(user_id_value):
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
-    cursor.execute('''
-        SELECT p.product_name, p.calories, p.protein, p.carbs, p.fats, k.amount, k.consume_date
-        FROM Konsumiert k
-        JOIN Product p ON k.product_id = p.product_id
-        WHERE k.consume_date >= datetime('now', '-7 days')
-        AND k.user_id = ?
-    ''', (user_id_value,))
-    user_data = cursor.fetchall()
-    conn.close()
-    return user_data
-
-def navigate_to(page_name):
-    st.query_params.page = page_name
-    time.sleep(0.2)
-    st.rerun()
-
 # Function to display the dashboard
 def dashboard():
     user = get_cookie("current_user")
-    user_data = get_user_data_weekConsumed(get_cookie("user_id"))
+    user_data = get_user_data_weekConsumed(get_cookie("user_id"), DB_NAME)
 
     st.title(f"Welcome {user} to your Dashboard!")
 
@@ -132,7 +82,7 @@ if selected_page == "Login":
     password = st.text_input("Password", type="password")
     
     if st.button("Login"):
-        user = login_user(username, password)
+        user = login_user(username, password, DB_NAME)
         if user:
             set_cookie("logged_in", "true")
             set_cookie("current_user", username)
@@ -148,8 +98,8 @@ elif selected_page == "Sign Up":
     password = st.text_input("Password", type="password")
     
     if st.button("Sign Up"):
-        if login_user(username, password) is None:
-            if add_user(username, password):
+        if login_user(username, password, DB_NAME) is None:
+            if add_user(username, password, DB_NAME):
                 st.success("Sign-up successful! You can now log in.")
                 time.sleep(2)
                 navigate_to("Login")
