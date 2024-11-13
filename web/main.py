@@ -40,10 +40,16 @@ def login_user(username, password):
         return user
     return None
 
-def get_user_data(username):
+def get_user_data_weekConsumed(user_id_value):
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM Users WHERE username = ?", (username,))
+    cursor.execute('''
+        SELECT p.product_name, p.calories, p.protein, p.carbs, p.fats, k.amount, k.consume_date
+        FROM Konsumiert k
+        JOIN Product p ON k.product_id = p.product_id
+        WHERE k.consume_date >= datetime('now', '-7 days')
+        AND k.user_id = ?
+    ''', (user_id_value,))
     user_data = cursor.fetchone()
     conn.close()
     return user_data
@@ -66,8 +72,15 @@ def navigate_to(page_name):
 # Function to display the dashboard
 def dashboard():
     user = get_cookie("current_user")
-    user_data = get_user_data(user)
+    user_data = get_user_data_weekConsumed(get_cookie("user_id"))
+
     st.title(f"Welcome {user} to your Dashboard!")
+
+    if user_data:
+        st.write(f"Hello {user}, here's your data for the past week:")
+        st.write(user_data)
+    else:
+        st.write("No data found for the past week.")
 
 # Main application logic
 st.title("Nutrition Tracker")
@@ -108,6 +121,7 @@ if selected_page == "Login":
         if user:
             set_cookie("logged_in", "true")
             set_cookie("current_user", username)
+            set_cookie("user_id", user[0])
             st.success("Login successful!")
             navigate_to("Dashboard")
         else:
