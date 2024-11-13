@@ -7,6 +7,7 @@ import pandas as pd
 import sys
 
 from processor.data_checker import fetch_and_store_nutrition_data
+from web.helper.cookies import set_cookie, get_cookie, delete_cookie
 
 # Helper function to hash passwords
 def hash_password(password: str) -> str:
@@ -58,16 +59,6 @@ def get_user_data_weekConsumed(user_id_value):
     conn.close()
     return user_data
 
-# Cookie management
-def set_cookie(name, value, expires=6000):
-    controller.set(name, value, max_age=expires, path="/")
-
-def get_cookie(name):
-    return controller.get(name)
-
-def delete_cookie(name):
-    controller.remove(name)
-
 def navigate_to(page_name):
     st.query_params.page = page_name
     time.sleep(0.2)
@@ -101,6 +92,9 @@ def dashboard():
             st.error("No data found for the given query.")
         else:
             st.success("Data fetched and stored successfully!")
+            # Show reload button
+            if st.button("Reload Page"):
+                navigate_to("Dashboard")
 
 
 # Main application logic
@@ -114,8 +108,6 @@ except AttributeError:
     page = "Login"
 
 # Retrieve login status from cookie
-print(f"Logged in: {get_cookie('logged_in')}")
-print(f"Current user: {get_cookie('current_user')}")
 logged_in = get_cookie("logged_in") == "true"
 
 # Sidebar navigation
@@ -131,7 +123,7 @@ try:
         navigate_to(selected_page)
 except ValueError:
     print(f"Invalid match for page: {page} in menu: {menu}")
-    page = "Dashboard"
+    page = "Login"
     selected_page = st.sidebar.radio("Select a page", menu, index=menu.index(page))
 
 if selected_page == "Login":
