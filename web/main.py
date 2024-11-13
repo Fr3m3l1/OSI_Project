@@ -25,13 +25,36 @@ def login(username, password):
     else:
         st.error("User not found.")
 
-# Function to handle sign-up
-def sign_up(username, password):
-    if username in st.session_state.user_data:
-        st.error("User already exists.")
-    else:
-        st.session_state.user_data[username] = {'password': hash_password(password), 'nutrition': 0, 'calories': 0}
-        st.success("Sign-up successful! You can now log in.")
+# Function to add a new user
+def add_user(username, password):
+    conn = sqlite3.connect("nutrition_data.db")
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO Users (username, password) VALUES (?, ?)", 
+                   (username, hash_password(password)))
+    conn.commit()
+    conn.close()
+
+# Function to check if a user exists and validate password
+def login_user(username, password):
+    conn = sqlite3.connect("nutrition_data.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM Users WHERE username = ?", (username,))
+    user = cursor.fetchone()
+    conn.close()
+    
+    if user and user[2] == hash_password(password):  # user[2] is the password column
+        return user
+    return None
+
+# Function to get user data for the dashboard
+def get_user_data(username):
+    conn = sqlite3.connect("nutrition_data.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT calories, nutrition FROM Users WHERE username = ?", (username,))
+    user_data = cursor.fetchone()
+    conn.close()
+    return user_data
+
 
 # Function to display the dashboard
 def dashboard():
@@ -60,7 +83,13 @@ if page == "Login":
     password = st.text_input("Password", type="password")
     
     if st.button("Login"):
-        login(username, password)
+        user = login_user(username, password)
+        if user:
+            st.session_state.logged_in = True
+            st.session_state.current_user = username
+            st.success("Login successful!")
+        else:
+            st.error("Invalid username or password.")
 
 elif page == "Sign Up":
     st.subheader("Sign Up")
@@ -68,9 +97,14 @@ elif page == "Sign Up":
     password = st.text_input("Password", type="password")
     
     if st.button("Sign Up"):
-        sign_up(username, password)
+        # Check if the user already exists
+        if login_user(username, password) is None:
+            add_user(username, password)
+            st.success("Sign-up successful! You can now log in.")
+        else:
+            st.error("User already exists. Please choose a different username.")
 
-elif page == "Dashboard":
+elif page == "Dashboard" and st.session_state.logged_in:
     dashboard()
 
 # Logout functionality

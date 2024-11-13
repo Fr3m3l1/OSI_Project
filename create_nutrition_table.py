@@ -20,9 +20,9 @@ cursor.execute('''
 
 # Create the table user
 cursor.execute('''
-    CREATE TABLE IF NOT EXISTS User (
+    CREATE TABLE IF NOT EXISTS Users (
         user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT UNIQUE,
+        username TEXT UNIQUE,
         password TEXT
     )
 ''')
@@ -35,7 +35,7 @@ cursor.execute('''
         product_id INTEGER,
         amount REAL,
         consume_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES User (user_id),
+        FOREIGN KEY (user_id) REFERENCES Users (user_id),
         FOREIGN KEY (product_id) REFERENCES Product (product_id)
     )
 ''')
@@ -52,7 +52,7 @@ cursor.execute('''
         total_protein REAL,
         total_carbs REAL,
         total_fats REAL,
-        FOREIGN KEY (user_id) REFERENCES User (user_id)
+        FOREIGN KEY (user_id) REFERENCES Users (user_id)
     )
 ''')
 
