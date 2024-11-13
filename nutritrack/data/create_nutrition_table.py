@@ -65,4 +65,4 @@ def create_table(db_name):
     print("Tables created successfully.")
 
 if __name__ == "__main__":
-    create_nutrition_table('nutrition_data.db')
+    create_table('nutrition_data.db')

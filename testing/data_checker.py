@@ -1,6 +1,6 @@
 # fetch_and_insert_data
 import sqlite3
-from nutritionix_api import NutritionixAPI
+from testing.nutritionix_api import NutritionixAPI
 
 # Initialize NutritionixAPI
 api = NutritionixAPI()
