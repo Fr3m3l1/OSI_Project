@@ -4,6 +4,7 @@ import streamlit as st
 import hashlib
 import sqlite3
 import time
+import pandas as pd
 
 # Helper function to hash passwords
 def hash_password(password: str) -> str:
@@ -50,7 +51,7 @@ def get_user_data_weekConsumed(user_id_value):
         WHERE k.consume_date >= datetime('now', '-7 days')
         AND k.user_id = ?
     ''', (user_id_value,))
-    user_data = cursor.fetchone()
+    user_data = cursor.fetchall()
     conn.close()
     return user_data
 
@@ -78,7 +79,13 @@ def dashboard():
 
     if user_data:
         st.write(f"Hello {user}, here's your data for the past week:")
-        st.write(user_data)
+        # Format the data into a table for better readability 
+        # Add column name (product_name, calories, protein, carbs, fats, amount, consume_date)
+        headers_name = ["Product Name", "Calories", "Protein", "Carbs", "Fats", "Amount", "Consume Date"]
+        # Transpose the data to display in a table from row to column
+        df = pd.DataFrame(user_data, columns=headers_name)
+        st.write(df)
+        
     else:
         st.write("No data found for the past week.")
 
