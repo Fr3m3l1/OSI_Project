@@ -1,17 +1,20 @@
-from streamlit_js_eval import streamlit_js_eval
 from streamlit_cookies_controller import CookieController
 import streamlit as st
 import hashlib
 import sqlite3
 import time
 import pandas as pd
+import sys
+
+from processor.data_checker import fetch_and_store_nutrition_data
 
 # Helper function to hash passwords
 def hash_password(password: str) -> str:
     return hashlib.sha256(password.encode()).hexdigest()
 
 # Database setup
-DB_NAME = "nutrition_data.db"
+print(f"Database path: {sys.argv[1]}")
+DB_NAME = sys.argv[1]
 controller = CookieController()
 
 # Database functions
@@ -88,6 +91,14 @@ def dashboard():
         
     else:
         st.write("No data found for the past week.")
+
+    # Add input field to search for food items
+    search_query = st.text_input("Enter a food item to search:")
+    if st.button("Search"):
+        # Fetch and store nutrition data
+        fetch_and_store_nutrition_data(DB_NAME, search_query)
+        st.success("Data fetched and stored successfully!")
+
 
 # Main application logic
 st.title("Nutrition Tracker")

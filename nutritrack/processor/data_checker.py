@@ -1,6 +1,6 @@
 # fetch_and_insert_data
 import sqlite3
-from nutritionix_api import NutritionixAPI
+from processor.API.nutritionix_api import NutritionixAPI
 
 # Initialize NutritionixAPI
 api = NutritionixAPI()
@@ -25,6 +25,8 @@ def insert_nutrition_data(db_name, food_data):
 # Function to fetch and insert nutrition data based on user input
 def fetch_and_store_nutrition_data(db_name, query):
     # Fetch data using NutritionixAPI
+    print(f"Fetching data for: {query}")
+
     nutrition_data = api.get_nutrition_info(query)
     
     # Insert each item into the database
