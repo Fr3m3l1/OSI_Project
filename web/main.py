@@ -1,4 +1,5 @@
 from streamlit_js_eval import streamlit_js_eval
+from streamlit_cookies_controller import CookieController
 import streamlit as st
 import hashlib
 import sqlite3
@@ -8,23 +9,25 @@ import time
 def hash_password(password: str) -> str:
     return hashlib.sha256(password.encode()).hexdigest()
 
-# Initialize session state if not done already
-if "logged_in" not in st.session_state:
-    st.session_state.logged_in = False
-if "user_data" not in st.session_state:
-    st.session_state.user_data = {}
-
 # Database setup
 DB_NAME = "nutrition_data.db"
+controller = CookieController()
 
 # Database functions
 def add_user(username, password):
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
+    # Check if user already exists
+    cursor.execute("SELECT * FROM Users WHERE username = ?", (username,))
+    user = cursor.fetchone()
+    if user:
+        conn.close()
+        return False
     cursor.execute("INSERT INTO Users (username, password) VALUES (?, ?)", 
                    (username, hash_password(password)))
     conn.commit()
     conn.close()
+    return True
 
 def login_user(username, password):
     conn = sqlite3.connect(DB_NAME)
@@ -45,45 +48,57 @@ def get_user_data(username):
     conn.close()
     return user_data
 
-# Helper function to manage URL-based navigation
-def navigate_to(page_name):
-    st.query_params["page"] = page_name
+# Cookie management
+def set_cookie(name, value, expires=None):
+    controller.set(name, value, max_age=expires, path="/")
 
-def refresh():
+def get_cookie(name):
+    return controller.get(name)
+
+def delete_cookie(name):
+    controller.remove(name)
+
+def navigate_to(page_name):
+    st.query_params.page = page_name
     time.sleep(0.2)
-    streamlit_js_eval(js_expressions="parent.window.location.reload()")
+    st.rerun()
 
 # Function to display the dashboard
 def dashboard():
-    user = st.session_state.current_user
+    user = get_cookie("current_user")
     user_data = get_user_data(user)
-    
     st.title(f"Welcome {user} to your Dashboard!")
 
 # Main application logic
 st.title("Nutrition Tracker")
 
 # URL navigation setup
-page = st.query_params.page
-if page is None or page == "":
+try:
+    page = st.query_params.page
+except AttributeError:
+    print("No query params found.")
     page = "Login"
 
+# Retrieve login status from cookie
+logged_in = get_cookie("logged_in") == "true"
+
 # Sidebar navigation
-if st.session_state.logged_in:
+if logged_in:
     menu = ["Dashboard", "Log Out"]
 else:
     menu = ["Login", "Sign Up"]
 
-if page in menu:
+# Page routing
+try:
     selected_page = st.sidebar.radio("Select a page", menu, index=menu.index(page))
-else:
-    selected_page = "Login"
-    print("Invalid page selected. Redirecting to Login page.")
-    print(st.session_state.logged_in)
+    if selected_page != page:
+        navigate_to(selected_page)
+except ValueError:
+    print("Invalid page selected. Redirecting to Dashboard.")
+    page = "Dashboard"
+    selected_page = st.sidebar.radio("Select a page", menu, index=menu.index(page))
 
-# Page routing based on sidebar selection or URL parameter
 if selected_page == "Login":
-    navigate_to("Login")
     st.subheader("Login")
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
@@ -91,35 +106,36 @@ if selected_page == "Login":
     if st.button("Login"):
         user = login_user(username, password)
         if user:
-            st.session_state.logged_in = True
-            st.session_state.current_user = username
+            set_cookie("logged_in", "true")
+            set_cookie("current_user", username)
             st.success("Login successful!")
             navigate_to("Dashboard")
-            refresh()
         else:
             st.error("Invalid username or password.")
 
 elif selected_page == "Sign Up":
-    navigate_to("Sign Up")
     st.subheader("Sign Up")
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
     
     if st.button("Sign Up"):
         if login_user(username, password) is None:
-            add_user(username, password)
-            st.success("Sign-up successful! You can now log in.")
-            navigate_to("Login")
+            if add_user(username, password):
+                st.success("Sign-up successful! You can now log in.")
+                time.sleep(2)
+                navigate_to("Login")
+            else:
+                st.error("User already exists. Please choose a different username.")
         else:
             st.error("User already exists. Please choose a different username.")
 
-elif selected_page == "Dashboard" and st.session_state.logged_in:
-    navigate_to("Dashboard")
+elif selected_page == "Dashboard" and logged_in:
     dashboard()
 
 # Logout functionality
-if selected_page == "Log Out" and st.session_state.logged_in:
-    st.session_state.logged_in = False
-    st.session_state.current_user = None
+if selected_page == "Log Out" and logged_in:
+    delete_cookie("logged_in")
+    delete_cookie("current_user")
     st.success("Logged out successfully!")
+    time.sleep(2)
     navigate_to("Login")
