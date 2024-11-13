@@ -21,3 +21,5 @@ This project is a nutrition tracking application that allows users to track thei
 - Backup or Meltano 
 
 ![Infrastructure](https://github.com/Fr3m3l1/OSI_Project/blob/main/doc/Infrastucture%20Plan.png)
+
+![DB Schema](https://github.com/Fr3m3l1/OSI_Project/blob/main/doc/DB%20Structure.png)
