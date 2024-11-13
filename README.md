@@ -13,9 +13,11 @@ This project is a nutrition tracking application that allows users to track thei
 - [Pia](https....)
 
 ## Infrastructure
-- Portainer
-- Streamlit
+- Portman (Container)
+- Streamlit (Flask)
 - SQLite
 - Nutrionix API
+- Cron Job (Weekly Statistics)
+- Backup or Meltano 
 
 ![Infrastructure](https://github.com/Fr3m3l1/OSI_Project/blob/main/doc/Infrastucture%20Plan.png)
