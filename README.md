@@ -9,8 +9,8 @@ This project is a nutrition tracking application that allows users to track thei
 ## Team Members
 - [grahanoi](https://github.com/grahanoi)
 - [gurovamr](https://github.com/gurovamr)
-- [schmoc05](https://github.com/Fr3m3l1)
-- [Pia](https....)
+- [schmic05](https://github.com/Fr3m3l1)
+- [laglepia](https://github.com/Lagpi)
 
 ## Infrastructure
 - Portman (Container)
