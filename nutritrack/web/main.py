@@ -59,7 +59,7 @@ def get_user_data_weekConsumed(user_id_value):
     return user_data
 
 # Cookie management
-def set_cookie(name, value, expires=None):
+def set_cookie(name, value, expires=6000):
     controller.set(name, value, max_age=expires, path="/")
 
 def get_cookie(name):
@@ -96,8 +96,11 @@ def dashboard():
     search_query = st.text_input("Enter a food item to search:")
     if st.button("Search"):
         # Fetch and store nutrition data
-        fetch_and_store_nutrition_data(DB_NAME, search_query)
-        st.success("Data fetched and stored successfully!")
+        err = fetch_and_store_nutrition_data(DB_NAME, search_query, get_cookie("user_id"))
+        if err:
+            st.error("No data found for the given query.")
+        else:
+            st.success("Data fetched and stored successfully!")
 
 
 # Main application logic
@@ -111,6 +114,8 @@ except AttributeError:
     page = "Login"
 
 # Retrieve login status from cookie
+print(f"Logged in: {get_cookie('logged_in')}")
+print(f"Current user: {get_cookie('current_user')}")
 logged_in = get_cookie("logged_in") == "true"
 
 # Sidebar navigation
@@ -125,7 +130,7 @@ try:
     if selected_page != page:
         navigate_to(selected_page)
 except ValueError:
-    print("Invalid page selected. Redirecting to Dashboard.")
+    print(f"Invalid match for page: {page} in menu: {menu}")
     page = "Dashboard"
     selected_page = st.sidebar.radio("Select a page", menu, index=menu.index(page))
 
