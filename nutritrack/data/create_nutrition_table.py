@@ -2,6 +2,8 @@ import sqlite3
 
 def create_table(db_name):
 
+    print(f"Connecting or creating database: {db_name}")
+
     # Connect to SQLite database (or create it if it doesn't exist)
     conn = sqlite3.connect(db_name)
     cursor = conn.cursor()

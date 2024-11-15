@@ -8,8 +8,8 @@ import os
 from datetime import datetime
 from dotenv import load_dotenv
 
-
 from data import create_nutrition_table
+
 
 db_name = "nutritrack/data/nutrition_data.db"
 
