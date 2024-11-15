@@ -20,7 +20,6 @@ if os.getenv("ENV") == "Local":
     local_env = True
 else:
     local_env = False
-    db_name = "/home/ubuntu/OSI_Project/nutritrack/data/nutrition_data.db"
 
 # Access the SQLite database
 def access_db():
@@ -54,7 +53,7 @@ def run_streamlit():
     if local_env:
         sys.argv = ["streamlit", "run", "nutritrack/web/main.py", db_name, "--server.port", "8501"]
     else:
-        sys.argv = ["streamlit", "run", "nutritrack/web/main.py", db_name, "--server.port", "32223", "--server.enableCORS", "false"]
+        sys.argv = ["streamlit", "run", "nutritrack/web/main.py", db_name, "--server.port", "8501"]
     stcli.main()
 
 # Main function to start processes
