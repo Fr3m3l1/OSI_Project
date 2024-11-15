@@ -20,6 +20,7 @@ if os.getenv("ENV") == "Local":
     local_env = True
 else:
     local_env = False
+    db_name = "/home/ubuntu/OSI_Project/nutritrack/nutritrack/data/nutrition_data.db"
 
 # Access the SQLite database
 def access_db():
