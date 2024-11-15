@@ -2,7 +2,7 @@ import sqlite3
 from datetime import datetime, timedelta
 
 
-def cron_job():
+def cron_job(db_name):
     conn = sqlite3.connect(db_name)
     cursor = conn.cursor()
     

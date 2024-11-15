@@ -4,6 +4,7 @@ import streamlit.web.cli as stcli
 import schedule
 import time
 import sys
+import os
 from datetime import datetime
 from dotenv import load_dotenv
 
@@ -14,6 +15,11 @@ db_name = "nutritrack/data/nutrition_data.db"
 
 # Load environment variables from .env file
 load_dotenv()
+# Check if local enviroment is set
+if os.getenv("ENV") == "Local":
+    local_env = True
+else:
+    local_env = False
 
 # Access the SQLite database
 def access_db():
@@ -44,7 +50,10 @@ def schedule_cron():
 
 # Function to start the Streamlit server
 def run_streamlit():
-    sys.argv = ["streamlit", "run", "nutritrack/web/main.py", db_name]
+    if local_env:
+        sys.argv = ["streamlit", "run", "nutritrack/web/main.py", db_name, "--server.port", "8501"]
+    else:
+        sys.argv = ["streamlit", "run", "nutritrack/web/main.py", db_name, "--server.port", "32223", "--server.enableCORS", "false"]
     stcli.main()
 
 # Main function to start processes
