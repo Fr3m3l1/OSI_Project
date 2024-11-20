@@ -35,9 +35,10 @@ def dashboard():
 
     # Add input field to search for food items
     search_query = st.text_input("Enter a food item to search:")
+    amount = st.number_input("Enter the amount consumed (in grams):", min_value=0, value=100)
     if st.button("Search"):
         # Fetch and store nutrition data
-        err = fetch_and_store_nutrition_data(DB_NAME, search_query, get_cookie("user_id"))
+        err = fetch_and_store_nutrition_data(DB_NAME, search_query, get_cookie("user_id"), amount)
         if err:
             st.error("No data found for the given query.")
         else:
