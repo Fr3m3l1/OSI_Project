@@ -7,6 +7,7 @@ import sys
 import os
 from datetime import datetime
 from dotenv import load_dotenv
+from cron_job import cron_job
 
 from data import create_nutrition_table
 
@@ -25,28 +26,15 @@ else:
 def access_db():
     create_nutrition_table.create_table(db_name)
 
-# Task to be run periodically (simulates a cron job)
-def cron_job():
-    conn = sqlite3.connect(db_name)
-    cursor = conn.cursor()
-    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    cursor.execute("SELECT * FROM Users WHERE username = ?", ("Fr3m3l",))
-    user = cursor.fetchone()
-    if user:
-        print(f"[{timestamp}] - Found user with username: {user[1]}")
-    else:
-        cursor.execute("INSERT INTO Users (username, password) VALUES (?, ?)", ("Fr3m3l", "password"))
-        print(f"[{timestamp}] - User not found.")
-    conn.commit()
-    conn.close()
-    print(f"[{timestamp}] - cron job executed.")
 
 # Function to schedule tasks
 def schedule_cron():
-    schedule.every(1).minutes.do(cron_job)  # Runs the cron job every minute
+    schedule.every().sunday.at("23:00").do(cron_job)  # Run cron job every Sunday at 23:00
     while True:
         schedule.run_pending()
         time.sleep(1)
+
+
 
 # Function to start the Streamlit server
 def run_streamlit():
