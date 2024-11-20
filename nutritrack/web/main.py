@@ -36,6 +36,13 @@ def dashboard():
     # Add input field to search for food items
     search_query = st.text_input("Enter a food item to search:")
     if st.button("Search"):
+        # Fix latin encoding issue
+        try:
+            print("Encoding search query")
+            search_query = search_query.encode("latin1").decode("utf-8")
+        except UnicodeDecodeError:
+            print("UnicodeDecodeError no encoding needed")
+            pass
         # Fetch and store nutrition data
         err = fetch_and_store_nutrition_data(DB_NAME, search_query, get_cookie("user_id"))
         if err:
