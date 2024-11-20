@@ -16,18 +16,22 @@ db_name = "nutritrack/data/nutrition_data.db"
 load_dotenv()
 # Check if local enviroment is set
 if os.getenv("ENV") == "Local":
+    print("Running in local environment.")
     local_env = True
 else:
+    print("Running in production environment.")
     local_env = False
 
 # Access the SQLite database
 def access_db():
     create_nutrition_table.create_table(db_name)
 
-
 # Function to schedule tasks
 def schedule_cron():
-    schedule.every().sunday.at("23:00").do(cron_job)  # Run cron job every Sunday at 23:00
+    if local_env:
+        schedule.every(1).minutes.do(cron_job)
+    else:
+        schedule.every().sunday.at("23:00").do(cron_job)  # Run cron job every Sunday at 23:00
     while True:
         schedule.run_pending()
         time.sleep(1)
