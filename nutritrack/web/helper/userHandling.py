@@ -42,3 +42,18 @@ def get_user_data_weekConsumed(user_id_value, db_name):
     user_data = cursor.fetchall()
     conn.close()
     return user_data
+
+
+def get_user_weekly_stats(user_id_value, db_name):
+    conn = sqlite3.connect(db_name)
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT week_start, calories, protein, carbs, fats
+        FROM WeeklyStats
+        WHERE user_id = ?
+        ORDER BY week_start DESC
+        LIMIT 1
+    ''', (user_id_value,))
+    user_stats = cursor.fetchone()
+    conn.close()
+    return user_stats

@@ -3,10 +3,11 @@ import streamlit as st
 import time
 import pandas as pd
 import sys
+import matplotlib.pyplot as plt
 
 from processor.data_checker import fetch_and_store_nutrition_data
 from web.helper.cookies import set_cookie, get_cookie, delete_cookie
-from web.helper.userHandling import login_user, add_user, get_user_data_weekConsumed
+from web.helper.userHandling import login_user, add_user, get_user_data_weekConsumed, get_user_weekly_stats
 from web.helper.miscellaneous import navigate_to
 
 # Database setup
@@ -36,6 +37,11 @@ def dashboard():
     # Add input field to search for food items
     search_query = st.text_input("Enter a food item to search:")
     amount = st.number_input("Enter the amount consumed (in grams):", min_value=0, value=100)
+    col1, col2 = st.columns(2)
+    with col1:
+        date = st.date_input("Enter the date consumed:")
+    with col2:
+        time_consumed = st.time_input("Enter the time consumed:")
     if st.button("Search"):
         # Fetch and store nutrition data
         err = fetch_and_store_nutrition_data(DB_NAME, search_query, get_cookie("user_id"), amount)
@@ -47,6 +53,40 @@ def dashboard():
             if st.button("Reload Page"):
                 navigate_to("Dashboard")
 
+    # Display weekly stats
+def display_weekly_stats(user_id):
+    st.title("Weekly Nutrition Statistics")
+
+    # Fetch the weekly stats
+    stats = get_user_weekly_stats(user_id, DB_NAME)
+
+    # Check if data is available
+    if not stats:
+        st.write("No statistics available for the selected user.")
+        return
+
+    # Convert the data to a DataFrame for easier plotting
+    df = pd.DataFrame(stats, columns=["Week Start", "Calories", "Protein", "Carbs", "Fats"])
+    df["Week Start"] = pd.to_datetime(df["Week Start"])
+
+ 
+    # Plot the data
+    st.write("### Weekly Nutrition Trends")
+    fig, ax = plt.subplots(figsize=(10, 6))  # Set the figure size for better readability
+
+    # Plot each metric
+    ax.plot(df["Week Start"], df["Calories"], marker='o', label="Calories", linewidth=2)
+    ax.plot(df["Week Start"], df["Protein"], marker='o', label="Protein", linewidth=2)
+    ax.plot(df["Week Start"], df["Carbs"], marker='o', label="Carbs", linewidth=2)
+    ax.plot(df["Week Start"], df["Fats"], marker='o', label="Fats", linewidth=2)
+
+    # Beautify the plot
+    ax.set_xlabel("Week Start", fontsize=12)
+    ax.set_ylabel("Amount", fontsize=12)
+    ax.set_title("Weekly Nutrition Trends", fontsize=16, fontweight='bold')
+    ax.legend(title="Metrics", fontsize=10)  
+    ax.grid(visible=True, which='major', linestyle='--', linewidth=0.5, alpha=0.7)
+    ax.tick_params(axis='both', which='major', labelsize=10)
 
 # Main application logic
 st.title("Nutrition Tracker")
