@@ -29,9 +29,9 @@ def access_db():
 # Function to schedule tasks
 def schedule_cron(db_name):
     if local_env:
-        schedule.every(1).minutes.do(cron_job(db_name))  # Run cron job every minute
+        schedule.every(1).minutes.do(cron_job, db_name)
     else:
-        schedule.every().sunday.at("23:00").do(cron_job(db_name))  # Run cron job every Sunday at 23:00
+        schedule.every().sunday.at("23:00").do(cron_job, db_name)
     while True:
         schedule.run_pending()
         time.sleep(1)
@@ -50,7 +50,7 @@ def run_streamlit():
 if __name__ == "__main__":
     # Start the cron job scheduler and Streamlit server in parallel
     access_db()
-    cron_process = multiprocessing.Process(target=schedule_cron)
+    cron_process = multiprocessing.Process(target=schedule_cron, args=(db_name,))
     streamlit_process = multiprocessing.Process(target=run_streamlit)
 
     cron_process.start()
