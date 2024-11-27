@@ -41,7 +41,7 @@ def check_duplicate(query, db_name):
     return [False, None]
 
 # Function to fetch and insert nutrition data based on user input
-def fetch_and_store_nutrition_data(db_name, query, user_id = None, amount = 1) -> Exception:
+def fetch_and_store_nutrition_data(db_name, query, date, user_id = None, amount = 1) -> Exception:
     # Fetch data using NutritionixAPI
     print(f"Fetching data for: {query}")
 
@@ -74,9 +74,9 @@ def fetch_and_store_nutrition_data(db_name, query, user_id = None, amount = 1) -
             conn = sqlite3.connect(db_name)
             cursor = conn.cursor()
             cursor.execute('''
-                INSERT INTO Konsumiert (user_id, product_id, amount)
-                VALUES (?, ?, ?)
-            ''', (user_id, product[0], amount))
+                INSERT INTO Konsumiert (user_id, product_id, amount, consume_date)
+                VALUES (?, ?, ?, ?)
+            ''', (user_id, product[0], amount, date))
             conn.commit()
             conn.close()
 

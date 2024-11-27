@@ -43,8 +43,9 @@ def dashboard():
     with col2:
         time_consumed = st.time_input("Enter the time consumed:")
     if st.button("Search"):
+        data_time = f"{date} {time_consumed}"
         # Fetch and store nutrition data
-        err = fetch_and_store_nutrition_data(DB_NAME, search_query, get_cookie("user_id"), amount)
+        err = fetch_and_store_nutrition_data(DB_NAME, search_query, data_time, get_cookie("user_id"), amount)
         if err:
             st.error("No data found for the given query.")
         else:
