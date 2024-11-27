@@ -29,7 +29,7 @@ def access_db():
 # Function to schedule tasks
 def schedule_cron(db_name):
     if local_env:
-        schedule.every(1).minutes.do(cron_job)
+        schedule.every(1).minutes.do(cron_job(db_name))  # Run cron job every minute
     else:
         schedule.every().sunday.at("23:00").do(cron_job(db_name))  # Run cron job every Sunday at 23:00
     while True:
