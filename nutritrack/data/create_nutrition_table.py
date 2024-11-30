@@ -56,7 +56,8 @@ def create_table(db_name):
             total_protein REAL,
             total_carbs REAL,
             total_fats REAL,
-            FOREIGN KEY (user_id) REFERENCES Users (user_id)
+            FOREIGN KEY (user_id) REFERENCES Users (user_id),
+            UNIQUE (week_id, year, user_id) -- Enforce unique combination
         )
     ''')
 
