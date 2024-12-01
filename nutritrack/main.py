@@ -45,7 +45,7 @@ def run_streamlit():
     if local_env:
         sys.argv = ["streamlit", "run", "nutritrack/web/main.py", db_name, "--server.port", "8501"]
     else:
-        sys.argv = ["streamlit", "run", "nutritrack/web/main.py", db_name, "--server.port", "32223"]
+        sys.argv = ["streamlit", "run", "web/main.py", db_name, "--server.port", "32223"]
     stcli.main()
 
 # Main function to start processes
