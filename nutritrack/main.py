@@ -21,7 +21,7 @@ if os.getenv("ENV") == "Local":
     local_env = True
 else:
     print("Running in production environment.")
-    db_name = "app/data/nutrition_data.db"
+    db_name = "data/nutrition_data.db"
     local_env = False
 
 # Access the SQLite database
