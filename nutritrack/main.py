@@ -10,16 +10,18 @@ from cron_job import cron_job
 from data import create_nutrition_table
 
 
-db_name = "nutritrack/data/nutrition_data.db"
+
 
 # Load environment variables from .env file
 load_dotenv()
 # Check if local enviroment is set
 if os.getenv("ENV") == "Local":
     print("Running in local environment.")
+    db_name = "nutritrack/data/nutrition_data.db"
     local_env = True
 else:
     print("Running in production environment.")
+    db_name = "app/data/nutrition_data.db"
     local_env = False
 
 # Access the SQLite database
