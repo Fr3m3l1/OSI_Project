@@ -12,7 +12,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Expose a port (change if needed, e.g., 5000 for Flask)
-EXPOSE 8501
+EXPOSE 32223
 
 # Run main.py as the entry point
-CMD ["python", "web/main.py"]
+CMD ["python", "main.py"]
