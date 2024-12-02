@@ -11,6 +11,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the entire nutritrack folder content into the container
 COPY . .
 
+# Set the environment variable
+ENV ENV=Production
+
 # Expose a port (change if needed, e.g., 5000 for Flask)
 EXPOSE 32223
 
