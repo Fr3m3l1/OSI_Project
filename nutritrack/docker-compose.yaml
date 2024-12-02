@@ -1,9 +1,14 @@
+version: "3.8"
+
 services:
   nutritrack:
-    image: localhost:5000/nutritrack
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "32223:32223"
     environment:
       - NUTRITIONIX_API_KEY=323dff73abb3394dc9e2cc42bf2823f7
       - NUTRITIONIX_APP_ID=df943cb7
+      - ENV=Production
     restart: always
