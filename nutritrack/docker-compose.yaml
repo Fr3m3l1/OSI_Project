@@ -2,9 +2,7 @@ version: "3.8"
 
 services:
   nutritrack:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: http://160.85.252.22:5000/nutritrack:latest
     ports:
       - "32223:32223"
     environment:
