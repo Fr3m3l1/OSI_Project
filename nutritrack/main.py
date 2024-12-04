@@ -5,7 +5,7 @@ import time
 import sys
 import os
 from dotenv import load_dotenv
-from cron_job import cron_job
+from nutritrack.processor.cron_job import cron_job
 
 from data import create_nutrition_table
 
