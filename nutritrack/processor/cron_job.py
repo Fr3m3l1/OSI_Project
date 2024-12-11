@@ -1,8 +1,8 @@
 import sqlite3
 from datetime import datetime, timedelta
+import os
 
-
-def cron_job(db_name):
+def cron_job_weekly_stats(db_name):
     conn = sqlite3.connect(db_name)
     cursor = conn.cursor()
     
@@ -54,3 +54,33 @@ def cron_job(db_name):
     conn.close()
     print(f"[{datetime.now()}] - cron job executed.")
 
+def cron_job_backup_meltano(db_name):
+    # Function to backup the SQLite database to a Meltano-compatible format (CSV)
+    conn = sqlite3.connect(db_name)
+    cursor = conn.cursor()
+
+    if os.getenv("ENV") == "Local":
+        path = "nutritrack/data/"
+    else:
+        path = "data/"
+
+    # Fetch all tables from the database
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+    tables = cursor.fetchall()
+
+    for table in tables:
+        table_name = table[0]
+
+        cursor.execute(f"SELECT * FROM {table_name}")
+        rows = cursor.fetchall()
+
+        # Write the data to a CSV file or create a new one if it doesn't exist
+
+        with open(f"{path}/{table_name}.csv", "w") as file:
+            # Write the column names
+            file.write(",".join([description[0] for description in cursor.description]) + "\n")
+            # Write the data rows
+            for row in rows:
+                file.write(",".join([str(value) for value in row]) + "\n")
+
+        print(f"[{datetime.now()}] - Backup created for table: {table_name}")

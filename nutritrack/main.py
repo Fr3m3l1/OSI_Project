@@ -5,11 +5,9 @@ import time
 import sys
 import os
 from dotenv import load_dotenv
-from processor.cron_job import cron_job
+from processor.cron_job import cron_job_weekly_stats, cron_job_backup_meltano
 
 from data import create_nutrition_table
-
-
 
 
 # Load environment variables from .env file
@@ -31,9 +29,11 @@ def access_db():
 # Function to schedule tasks
 def schedule_cron(db_name):
     if local_env:
-        schedule.every(1).minutes.do(cron_job, db_name)
+        schedule.every(5).minutes.do(cron_job_weekly_stats, db_name)
+        schedule.every(1).minutes.do(cron_job_backup_meltano, db_name)
     else:
-        schedule.every().sunday.at("23:00").do(cron_job, db_name)
+        schedule.every().sunday.at("23:00").do(cron_job_weekly_stats, db_name)
+        schedule.every().day.at("22:00").do(cron_job_backup_meltano, db_name)
     while True:
         schedule.run_pending()
         time.sleep(1)
