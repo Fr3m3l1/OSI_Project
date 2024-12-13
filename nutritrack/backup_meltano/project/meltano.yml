@@ -25,11 +25,17 @@ plugins:
           entity: Weekly_Stats
           keys: ["weekly_stats_id"]  # Primärschlüssel für Weekly_Stats.csv
   loaders:
-  - name: target-sqlite
-    variant: meltanolabs
-    pip_url: git+https://github.com/MeltanoLabs/target-sqlite.git
-    config:
-      database: "../../data/backup_data/database.db"
+    - name: target-sqlite
+      variant: meltanolabs
+      pip_url: git+https://github.com/MeltanoLabs/target-sqlite.git
+      config:
+        database: "../../data/backup_data/database.db"
+  utilities:
+    - name: create-db-dir
+      namespace: create_db_dir
+      pip_url: null
+      executable: mkdir
+      args: ["-p", "../../data/backup_data"]
 schedules:
   - name: daily_csv_backup
     interval: "0 0 * * *"
@@ -38,5 +44,5 @@ schedules:
 jobs:
   - name: csv_to_sqlite
     tasks:
-      - name: tap-csv
-      - name: target-sqlite
+      - tap-csv
+      - target-sqlite
