@@ -1,5 +1,6 @@
 import os
 import requests
+import logging
 
 # Retrieve API credentials from environment variables
 APP_ID = os.getenv("NUTRITIONIX_APP_ID")
@@ -7,7 +8,7 @@ API_KEY = os.getenv("NUTRITIONIX_API_KEY")
 
 # Verify that APP_ID and API_KEY are loaded correctly
 if not APP_ID or not API_KEY:
-    print("Error: API credentials are missing. Check your .env file.")
+    logging.error("Error: API credentials are missing. Check your .env file.")
     exit()
 
 class NutritionixAPI:
@@ -24,7 +25,7 @@ class NutritionixAPI:
         if response.status_code == 200:
             return response.json()
         else:
-            print(f"Error {response.status_code}: {response.json().get('message', 'Unknown error')}")
+            logging.error(f"Error {response.status_code}: {response.json().get('message', 'Unknown error')}")
             return None
 
     def get_nutrition_info(self, query):
@@ -41,13 +42,13 @@ class NutritionixAPI:
                 })
             return info
         else:
-            print("No data found for the given query.")
+            logging.error("No data found for the given query.")
             return None
 
     def get_summary(self, query):
         data = self.get_nutrition_data(query)
         if not data or 'foods' not in data:
-            print("No data available to summarize.")
+            logging.warning("No data available to summarize.")
             return {}
 
         summaries = {}
@@ -65,21 +66,3 @@ class NutritionixAPI:
         }
         
         return summaries
-
-# Test the API class with a sample query
-if __name__ == "__main__":
-    api = NutritionixAPI()
-    
-    # Test fetching detailed nutrition info
-    query = "1 cup of rice and 2 eggs"
-    print("Fetching detailed nutrition info:")
-    nutrition_info = api.get_nutrition_info(query)
-    if nutrition_info:
-        for item in nutrition_info:
-            print(item)
-
-    # Test fetching summary info
-    print("\nFetching summary nutrition info:")
-    summary_info = api.get_summary(query)
-    if summary_info:
-        print("Summary:", summary_info)

@@ -4,23 +4,35 @@ import schedule
 import time
 import sys
 import os
+import logging
 from dotenv import load_dotenv
 from processor.cron_job import cron_job_weekly_stats, cron_job_backup_meltano
 
 from data import create_nutrition_table
 
-# Environment variables from .env file
+logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S')
+# Color codes for logging
+logging.addLevelName(logging.INFO, "\033[1;32m%s\033[1;0m" % logging.getLevelName(logging.INFO))
+logging.addLevelName(logging.WARNING, "\033[1;33m%s\033[1;0m" % logging.getLevelName(logging.WARNING))
+logging.addLevelName(logging.ERROR, "\033[1;31m%s\033[1;0m" % logging.getLevelName(logging.ERROR))
+
+# Load environment variables from .env file
+
 load_dotenv()
 
 # Determine the environment (local or production) based on ENV variable
 if os.getenv("ENV") == "Local":
-    print("Running in local environment.")
     db_name = "nutritrack/data/nutrition_data.db"
     local_env = True
+    # Set up logging
+    logging.basicConfig(level=logging.INFO)
+    logging.warning("Running in local environment.")
 else:
-    print("Running in production environment.")
     db_name = "data/nutrition_data.db"
     local_env = False
+    # Set up logging
+    logging.basicConfig(level=logging.WARNING)
+    logging.info("Running in production environment.")
 
 # Access the SQLite database
 def access_db():
@@ -28,7 +40,7 @@ def access_db():
 
 # Function to execute Meltano jobs
 def run_meltano_job():
-    print("Running Meltano job...")
+    logging.info("Running Meltano job...")
     # Create backup folder if it doesn't exist
     if not local_env and not os.path.exists("data/backup_data"):
         os.makedirs("data/backup_data")
@@ -40,9 +52,10 @@ def run_meltano_job():
         if local_env:
             os.system("cd nutritrack/backup_meltano/project && meltano el tap-csv target-sqlite")
         else:
-            os.system("cd backup_meltano/project && meltano el tap-csv target-sqlite")
+            os.system("cd backup_meltano/project && meltano el tap-csv target-sqlite --log-level=warning")
+            logging.info("Meltano job executed.")
     except Exception as e:
-        print(f"Error running Meltano job: {e}")
+        logging.error(f"Error running Meltano job: {e}")
 
 # Function to schedule tasks
 def schedule_cron(db_name):

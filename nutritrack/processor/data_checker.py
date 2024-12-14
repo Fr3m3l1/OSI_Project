@@ -1,6 +1,7 @@
 # fetch_and_insert_data
 import sqlite3
 from processor.API.nutritionix_api import NutritionixAPI
+import logging
 
 # NutritionixAPI
 api = NutritionixAPI()
@@ -20,7 +21,7 @@ def insert_nutrition_data(db_name, food_data):
           food_data['fats']))
     conn.commit()
     conn.close()
-    print(f"Data for {food_data['food']} inserted into the database.")
+    logging.info(f"Data for {food_data['food']} inserted into the database.")
 
 def search_product(query, db_name):
     conn = sqlite3.connect(db_name)
@@ -43,7 +44,7 @@ def check_duplicate(query, db_name):
 # Fetch and insert nutrition data based on user input
 def fetch_and_store_nutrition_data(db_name, query, date, user_id = None, amount = 1) -> Exception:
     # Fetch data using NutritionixAPI
-    print(f"Fetching data for: {query}")
+    logging.debug(f"Fetching data for: {query}")
 
     # Query into individual words
     query_array = query.split()
@@ -52,11 +53,11 @@ def fetch_and_store_nutrition_data(db_name, query, date, user_id = None, amount 
         # Upper case all the words
         query_string = query_array[i]
         query_string = query_string.upper()
-        print(f"Checking for: {query_string}")
+        logging.debug(f"Checking for: {query_string}")
 
         is_duplicate, product = check_duplicate(query_string, db_name)
 
-        print(f"Is duplicate: {is_duplicate}")
+        logging.debug(f"Is duplicate: {is_duplicate}")
 
         # Check if the word is in the database
         if not is_duplicate:
@@ -67,7 +68,7 @@ def fetch_and_store_nutrition_data(db_name, query, date, user_id = None, amount 
                     insert_nutrition_data(db_name, item)
                 product = search_product(query_string, db_name)
             else:
-                print("No data found for the given query.")
+                logging.warning("No data found for the given query.")
                 return Exception("No data found for the given query.")
 
         if user_id != None:
