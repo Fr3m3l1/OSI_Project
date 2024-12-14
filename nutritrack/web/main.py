@@ -2,6 +2,7 @@ from streamlit_cookies_controller import CookieController
 import streamlit as st
 import time
 import sys
+import logging
 
 from web.helper.cookies import set_cookie, get_cookie, delete_cookie
 from web.helper.userHandling import login_user, add_user
@@ -15,10 +16,10 @@ DB_NAME = sys.argv[1]
 try:
     controller = CookieController()
 except FileNotFoundError:
-    print("No cookies found.")
+    logging.error("No cookies found.")
     controller = CookieController()
 except Exception as e:
-    print(f"Error: {e}")
+    logging.error(f"Error: {e}")
     controller = CookieController()
 
 # Main application logic
@@ -28,7 +29,7 @@ st.title("Nutrition Tracker")
 try:
     page = st.query_params.page
 except AttributeError:
-    print("No query params found.")
+    logging.warning("No query params found.")
     page = "Login"
 
 # Retrieve login status from cookie
@@ -46,11 +47,11 @@ try:
     if selected_page != page:
         navigate_to(selected_page)
 except ValueError:
-    print(f"Invalid match for page: {page} in menu: {menu}")
+    logging.warning(f"Invalid match for page: {page} in menu: {menu}")
     page = "Login"
     selected_page = st.sidebar.radio("Select a page", menu, index=menu.index(page))
 
-print("Selected page:", selected_page)
+logging.debug("Selected page:", selected_page)
 
 if selected_page == "Login":
     st.subheader("Login")

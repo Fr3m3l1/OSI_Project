@@ -1,8 +1,9 @@
 import sqlite3
+import logging
 
 def create_table(db_name):
 
-    print(f"Connecting or creating database: {db_name}")
+    logging.info(f"Connecting or creating database: {db_name}")
 
     # Connect to SQLite database (or create it if it doesn't exist)
     conn = sqlite3.connect(db_name)
@@ -65,7 +66,7 @@ def create_table(db_name):
     conn.commit()
     conn.close()
 
-    print("Tables created successfully.")
+    logging.info("Tables created successfully.")
 
 if __name__ == "__main__":
     create_table('nutrition_data.db')
