@@ -29,7 +29,7 @@ plugins:
       variant: meltanolabs
       pip_url: git+https://github.com/MeltanoLabs/target-sqlite.git
       config:
-        database: "../../data/backup_data/database.db"
+        database: "../../data/backup_data/backup_database.db"
   utilities:
     - name: create-db-dir
       namespace: create_db_dir

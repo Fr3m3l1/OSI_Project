@@ -29,9 +29,18 @@ def access_db():
 # Function to execute Meltano jobs
 def run_meltano_job():
     print("Running Meltano job...")
+    # Create backup folder if it doesn't exist
+    if not local_env and not os.path.exists("data/backup_data"):
+        os.makedirs("data/backup_data")
+    elif local_env and not os.path.exists("nutritrack/data/backup_data"):
+        os.makedirs("nutritrack/data/backup_data")
+
     try:
         # Run the Meltano job specified in the 'daily_csv_backup' schedule
-        os.system("meltano run tap-csv target-sqlite")
+        if local_env:
+            os.system("cd nutritrack/backup_meltano/project && meltano elt tap-csv target-sqlite")
+        else:
+            os.system("cd backup_meltano/project && meltano elt tap-csv target-sqlite")
     except Exception as e:
         print(f"Error running Meltano job: {e}")
 
