@@ -13,7 +13,7 @@ def dashboard(DB_NAME):
     st.write(f"## Welcome {user} to your Dashboard!")
 
     if user_data:
-        st.write(f"Hello {user}, here's your data for this week:")
+        st.write(f"Hello {user}, here's your data for the last 7 days:")
         # Format the data into a table for better readability 
         # Add column name (product_name, calories, protein, carbs, fats, amount, consume_date)
         headers_name = ["Product Name", "Calories", "Protein", "Carbs", "Fats", "Amount", "Consume Date"]

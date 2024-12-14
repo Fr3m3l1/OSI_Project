@@ -4,7 +4,7 @@ import time
 import sys
 
 from web.helper.cookies import set_cookie, get_cookie, delete_cookie
-from web.helper.userHandling import login_user, add_user, get_user_data_weekConsumed, get_user_weekly_stats
+from web.helper.userHandling import login_user, add_user
 from web.helper.miscellaneous import navigate_to
 from web.site.dashboard import dashboard
 from web.site.weekly_stats import weekly_stats
