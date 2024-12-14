@@ -18,7 +18,7 @@ This project is a nutrition tracking application that allows users to track thei
 - SQLite
 - Nutrionix API
 - Cron Job (Weekly Statistics)
-- Backup or Meltano 
+- Backup with Meltano 
 
 ![Infrastructure](https://github.com/Fr3m3l1/OSI_Project/blob/main/doc/Infrastucture%20Plan.png)
 
