@@ -83,4 +83,4 @@ def cron_job_backup_meltano(db_name):
             for row in rows:
                 file.write(",".join([str(value) for value in row]) + "\n")
 
-        print(f"[{datetime.now()}] - Backup created for table: {table_name}")
+        print(f"[{datetime.now()}] - CSV export created for table: {table_name}")

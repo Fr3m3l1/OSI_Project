@@ -26,14 +26,25 @@ else:
 def access_db():
     create_nutrition_table.create_table(db_name)
 
+# Function to execute Meltano jobs
+def run_meltano_job():
+    print("Running Meltano job...")
+    try:
+        # Run the Meltano job specified in the 'daily_csv_backup' schedule
+        os.system("meltano run tap-csv target-sqlite")
+    except Exception as e:
+        print(f"Error running Meltano job: {e}")
+
 # Function to schedule tasks
 def schedule_cron(db_name):
     if local_env:
         schedule.every(5).minutes.do(cron_job_weekly_stats, db_name)
         schedule.every(1).minutes.do(cron_job_backup_meltano, db_name)
+        schedule.every(2).minutes.do(run_meltano_job)
     else:
         schedule.every().sunday.at("23:00").do(cron_job_weekly_stats, db_name)
         schedule.every().day.at("22:00").do(cron_job_backup_meltano, db_name)
+        schedule.every().day.at("22:30").do(run_meltano_job)
     while True:
         schedule.run_pending()
         time.sleep(1)
