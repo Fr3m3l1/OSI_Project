@@ -5,7 +5,8 @@ import time
 import sys
 import os
 from dotenv import load_dotenv
-from processor.cron_job import cron_job
+from processor.cron_job import cron_job_weekly_stats, cron_job_backup_meltano
+
 from data import create_nutrition_table
 
 # Environment variables from .env file
@@ -25,15 +26,35 @@ else:
 def access_db():
     create_nutrition_table.create_table(db_name)
 
-# Function to schedule tasks and run jobs
+# Function to execute Meltano jobs
+def run_meltano_job():
+    print("Running Meltano job...")
+    # Create backup folder if it doesn't exist
+    if not local_env and not os.path.exists("data/backup_data"):
+        os.makedirs("data/backup_data")
+    elif local_env and not os.path.exists("nutritrack/data/backup_data"):
+        os.makedirs("nutritrack/data/backup_data")
+
+    try:
+        # Run the Meltano job specified in the 'daily_csv_backup' schedule
+        if local_env:
+            os.system("cd nutritrack/backup_meltano/project && meltano el tap-csv target-sqlite")
+        else:
+            os.system("cd backup_meltano/project && meltano el tap-csv target-sqlite")
+    except Exception as e:
+        print(f"Error running Meltano job: {e}")
+
+# Function to schedule tasks
 def schedule_cron(db_name):
     # Different tasks schedul based on environment
     if local_env:
-        # Local environment: Cron job runs every 1 minute
-        schedule.every(1).minutes.do(cron_job, db_name)
+        schedule.every(5).minutes.do(cron_job_weekly_stats, db_name)
+        schedule.every(1).minutes.do(cron_job_backup_meltano, db_name)
+        schedule.every(2).minutes.do(run_meltano_job)
     else:
-        # Production environment: Cron job runs every Sunday at 23:00
-        schedule.every().sunday.at("23:00").do(cron_job, db_name)
+        schedule.every().sunday.at("23:00").do(cron_job_weekly_stats, db_name)
+        schedule.every().day.at("22:00").do(cron_job_backup_meltano, db_name)
+        schedule.every().day.at("22:30").do(run_meltano_job)
     while True:
         schedule.run_pending()
         time.sleep(1)

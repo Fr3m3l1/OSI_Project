@@ -1,0 +1,48 @@
+version: 1
+default_environment: dev
+project_id: 14f43102-e138-48f7-8ede-ce2c397606ae
+environments:
+- name: dev
+- name: staging
+- name: prod
+plugins:
+  extractors:
+  - name: tap-csv
+    variant: meltanolabs
+    pip_url: git+https://github.com/MeltanoLabs/tap-csv.git
+    config:
+      files:
+        - path: "../../data/Product.csv"
+          entity: Product
+          keys: ["product_id"]  # Primärschlüssel für Product.csv
+        - path: "../../data/Konsumiert.csv"
+          entity: Konsumiert
+          keys: ["konsum_id"]  # Primärschlüssel für Konsumiert.csv
+        - path: "../../data/Users.csv"
+          entity: Users
+          keys: ["user_id"]  # Primärschlüssel für Users.csv
+        - path: "../../data/Weekly_Stats.csv"
+          entity: Weekly_Stats
+          keys: ["weekly_stats_id"]  # Primärschlüssel für Weekly_Stats.csv
+  loaders:
+    - name: target-sqlite
+      variant: meltanolabs
+      pip_url: git+https://github.com/MeltanoLabs/target-sqlite.git
+      config:
+        database: "../../data/backup_data/backup_database.db"
+  utilities:
+    - name: create-db-dir
+      namespace: create_db_dir
+      pip_url: null
+      executable: mkdir
+      args: ["-p", "../../data/backup_data"]
+#schedules:
+#  - name: daily_csv_backup
+#    interval: "0 0 * * *"
+#    extractor: tap-csv
+#    loader: target-sqlite
+#jobs:
+#  - name: csv_to_sqlite
+#    tasks:
+#      - tap-csv
+#      - target-sqlite
