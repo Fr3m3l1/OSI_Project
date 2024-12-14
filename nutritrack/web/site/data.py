@@ -23,20 +23,20 @@ def data_editor(DB_NAME, user_id):
 
     headers_name = ["ID", "Product Name", "Calories", "Protein", "Carbs", "Fats", "Amount", "Consume Date"]
     
-    # Transpose the data to display in a table from row to column
+    # Data transpose
     df = pd.DataFrame(user_data, columns=headers_name)
 
-    # Round all the float columns to 2 decimal places
+    # Roun float columns to 2 decimal places
     df = df.round(2)
     
-    # Display the data
+    # Data display
     st.write("### User Data")
     st.markdown(
         df.style.format(precision=2).hide(axis="index").to_html(),
         unsafe_allow_html=True
     )
 
-    # Add input field to delete entries
+    # Input field to delete entries
     st.write("### Delete Entries")
     delete_id = st.number_input("Enter the ID of the entry to delete:", min_value=0, value=0)
     if st.button("Delete"):
@@ -45,6 +45,6 @@ def data_editor(DB_NAME, user_id):
             st.error("No data found for the given ID.")
         else:
             st.success("Data deleted successfully!")
-            # Show reload button
+            # Reload button
             if st.button("Reload Page"):
                 navigate_to("Data")

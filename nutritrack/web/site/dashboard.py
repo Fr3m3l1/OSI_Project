@@ -14,17 +14,17 @@ def dashboard(DB_NAME):
 
     if user_data:
         st.write(f"Hello {user}, here's your data for this week:")
-        # Format the data into a table for better readability 
-        # Add column name (product_name, calories, protein, carbs, fats, amount, consume_date)
+        # Data in tables for better readability 
+        # Column names
         headers_name = ["Product Name", "Calories", "Protein", "Carbs", "Fats", "Amount", "Consume Date"]
-        # Transpose the data to display in a table from row to column
+        # Table display from row to column
         df = pd.DataFrame(user_data, columns=headers_name)
         st.write(df)
         
     else:
         st.write("No data found for this week.")
 
-    # Add input field to search for food items
+    # Input field to search for food items
     search_query = st.text_input("Enter a food item to search:")
     amount = st.number_input("Enter the amount consumed (in grams):", min_value=0, value=100)
     col1, col2 = st.columns(2)
@@ -40,6 +40,6 @@ def dashboard(DB_NAME):
             st.error("No data found for the given query.")
         else:
             st.success("Data fetched and stored successfully!")
-            # Show reload button
+            
             if st.button("Reload Page"):
                 navigate_to("Dashboard")

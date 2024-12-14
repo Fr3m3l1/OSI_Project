@@ -2,10 +2,10 @@
 import sqlite3
 from processor.API.nutritionix_api import NutritionixAPI
 
-# Initialize NutritionixAPI
+# NutritionixAPI
 api = NutritionixAPI()
 
-# Function to insert data into the SQLite database
+# Data insertion into the SQLite database
 def insert_nutrition_data(db_name, food_data):
     conn = sqlite3.connect(db_name)
     cursor = conn.cursor()
@@ -40,12 +40,12 @@ def check_duplicate(query, db_name):
         return [True, product]
     return [False, None]
 
-# Function to fetch and insert nutrition data based on user input
+# Fetch and insert nutrition data based on user input
 def fetch_and_store_nutrition_data(db_name, query, date, user_id = None, amount = 1) -> Exception:
     # Fetch data using NutritionixAPI
     print(f"Fetching data for: {query}")
 
-    # Split the query into individual words
+    # Query into individual words
     query_array = query.split()
 
     for i in range(len(query_array)):
@@ -84,7 +84,7 @@ def fetch_and_store_nutrition_data(db_name, query, date, user_id = None, amount 
         
 
 
-# Example usage
+
 if __name__ == "__main__":
     # Ensure the database has been created by running create_nutrition_table.py first
     query = input("Enter a food item to search: ")
