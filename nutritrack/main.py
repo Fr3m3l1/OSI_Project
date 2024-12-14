@@ -38,9 +38,9 @@ def run_meltano_job():
     try:
         # Run the Meltano job specified in the 'daily_csv_backup' schedule
         if local_env:
-            os.system("cd nutritrack/backup_meltano/project && meltano elt tap-csv target-sqlite")
+            os.system("cd nutritrack/backup_meltano/project && meltano el tap-csv target-sqlite")
         else:
-            os.system("cd backup_meltano/project && meltano elt tap-csv target-sqlite")
+            os.system("cd backup_meltano/project && meltano el tap-csv target-sqlite")
     except Exception as e:
         print(f"Error running Meltano job: {e}")
 
