@@ -17,8 +17,10 @@ logging.addLevelName(logging.WARNING, "\033[1;33m%s\033[1;0m" % logging.getLevel
 logging.addLevelName(logging.ERROR, "\033[1;31m%s\033[1;0m" % logging.getLevelName(logging.ERROR))
 
 # Load environment variables from .env file
+
 load_dotenv()
-# Check if local enviroment is set
+
+# Determine the environment (local or production) based on ENV variable
 if os.getenv("ENV") == "Local":
     db_name = "nutritrack/data/nutrition_data.db"
     local_env = True
@@ -57,6 +59,7 @@ def run_meltano_job():
 
 # Function to schedule tasks
 def schedule_cron(db_name):
+    # Different tasks schedul based on environment
     if local_env:
         schedule.every(5).minutes.do(cron_job_weekly_stats, db_name)
         schedule.every(1).minutes.do(cron_job_backup_meltano, db_name)
@@ -71,15 +74,18 @@ def schedule_cron(db_name):
 
 
 
-# Function to start the Streamlit server
+# Start the Streamlit server
 def run_streamlit():
+    # Streamlit command-line arguments configuration based on environment
     if local_env:
+        # Local environment: Set up for debugging on port 8501
         sys.argv = ["streamlit", "run", "nutritrack/web/main.py", db_name, "--server.port", "8501"]
     else:
+        # Production environment: Configure for production server on port 32223
         sys.argv = ["streamlit", "run", "web/main.py", db_name, "--server.port", "32223"]
     stcli.main()
 
-# Main function to start processes
+# Main function to start parallel processes
 if __name__ == "__main__":
     # Start the cron job scheduler and Streamlit server in parallel
     access_db()
@@ -89,5 +95,6 @@ if __name__ == "__main__":
     cron_process.start()
     streamlit_process.start()
 
+    # Wait for both processes to complete (blocking call)
     cron_process.join()
     streamlit_process.join()

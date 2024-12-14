@@ -9,7 +9,7 @@ def create_table(db_name):
     conn = sqlite3.connect(db_name)
     cursor = conn.cursor()
 
-    # Create the table product
+    # Product table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS Product (
             product_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -23,7 +23,7 @@ def create_table(db_name):
         )
     ''')
 
-    # Create the table user
+    # User table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS Users (
             user_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -32,7 +32,7 @@ def create_table(db_name):
         )
     ''')
 
-    # Create the table Konsumiert (Consumed)
+    # Konsumiert (Consumed) table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS Konsumiert (
             konsum_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -45,7 +45,7 @@ def create_table(db_name):
         )
     ''')
 
-    # Create the table Weekly Stats
+    #Weekly Stats table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS Weekly_Stats (
             weekly_stats_id INTEGER PRIMARY KEY AUTOINCREMENT,
