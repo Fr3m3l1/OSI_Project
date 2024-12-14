@@ -36,13 +36,13 @@ plugins:
       pip_url: null
       executable: mkdir
       args: ["-p", "../../data/backup_data"]
-schedules:
-  - name: daily_csv_backup
-    interval: "0 0 * * *"
-    extractor: tap-csv
-    loader: target-sqlite
-jobs:
-  - name: csv_to_sqlite
-    tasks:
-      - tap-csv
-      - target-sqlite
+#schedules:
+#  - name: daily_csv_backup
+#    interval: "0 0 * * *"
+#    extractor: tap-csv
+#    loader: target-sqlite
+#jobs:
+#  - name: csv_to_sqlite
+#    tasks:
+#      - tap-csv
+#      - target-sqlite
