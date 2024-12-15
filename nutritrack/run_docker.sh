@@ -1,1 +1,1 @@
-podman compose up -d --build --restart=always
+podman compose up -d --build --restart=always --force-recreate`
