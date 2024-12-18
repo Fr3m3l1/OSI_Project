@@ -14,16 +14,16 @@ plugins:
       files:
         - path: "../../data/Product.csv"
           entity: Product
-          keys: ["product_id"]  # Primärschlüssel für Product.csv
+          keys: ["product_id"]  # primary key for Product.csv
         - path: "../../data/Konsumiert.csv"
           entity: Konsumiert
-          keys: ["konsum_id"]  # Primärschlüssel für Konsumiert.csv
+          keys: ["konsum_id"]  # primary key for Konsumiert.csv
         - path: "../../data/Users.csv"
           entity: Users
-          keys: ["user_id"]  # Primärschlüssel für Users.csv
+          keys: ["user_id"]  # primary key for Users.csv
         - path: "../../data/Weekly_Stats.csv"
           entity: Weekly_Stats
-          keys: ["weekly_stats_id"]  # Primärschlüssel für Weekly_Stats.csv
+          keys: ["weekly_stats_id"]  # primary key for Weekly_Stats.csv
   loaders:
     - name: target-sqlite
       variant: meltanolabs
